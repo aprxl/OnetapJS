@@ -1,0 +1,11 @@
+{
+  "name": "onetap-api",
+  "version": "1.0.0",
+  "description": "A library to easily use Onetap's API system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "april#0001",
+  "license": "ISC"
+}
