@@ -6,8 +6,4 @@ const api = new Onetap(
 	"tyxHSKa2nZvLp1EbwYNwDgjqTHg0FBfq"
 );
 
-api.GetConfigByName((cfg) => {
-	console.log( "Found" );
-}, "rage");
-
 module.exports = { Onetap };
