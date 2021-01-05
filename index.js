@@ -1,9 +1,11 @@
 const Onetap = require( "./lib/api" );
 
 const api = new Onetap(
-	"67d057bdb5100d90d8ca0c0fb176b924.access",
-	"d6e247e474835d2608ffa83e50962ac529cf60f41850fe71ee7b5301eb749390",
-	"tyxHSKa2nZvLp1EbwYNwDgjqTHg0FBfq"
+	"d1a013b33e1f6ff9e238651d830c95ad.access",
+	"4f6acce6fdfcc8d2b6651d93d0373af956059b9d8fa372b1180cc6d5040f1220",
+	"xmzPy6kXqyqa3yHEj6aN00eqQfH7Ryry"
 );
+
+api.DeleteConfigSubscription(() => { console.log('deleted config subscription') }, 1364, 3965);
 
 module.exports = { Onetap };
