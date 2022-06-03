@@ -13,6 +13,11 @@
   },
   "author": "april#0001",
   "license": "ISC",
+  "dependecies": {
+    "chalk": "^4.1.0",
+    "string-similarity": "^4.0.4",
+    "superagent": "^7.1.2"
+  }
   "devDependencies": {
     "@types/string-similarity": "^4.0.0",
     "@types/superagent": "^4.1.15",
