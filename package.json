@@ -13,7 +13,7 @@
   },
   "author": "april#0001",
   "license": "ISC",
-  "dependecies": {
+  "dependencies": {
     "chalk": "^4.1.0",
     "string-similarity": "^4.0.4",
     "superagent": "^7.1.2"
