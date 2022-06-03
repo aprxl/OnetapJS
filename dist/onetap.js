@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,41 +7,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = require("events");
-const string_similarity_1 = __importDefault(require("string-similarity"));
-const logger_1 = __importDefault(require("./helpers/logger"));
-const http_1 = __importDefault(require("./helpers/http"));
-const http = new http_1.default('api.onetap.com/cloud/');
+import { EventEmitter } from "events";
+import ss from "string-similarity";
+import logger from "./helpers/logger.js";
+import http_manager from "./helpers/http.js";
+const http = new http_manager("api.onetap.com/cloud/");
 class onetap {
     constructor(api_key, tick_delay = 2500) {
         this.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Api-Key': ''
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Api-Key": "",
         };
-        this.emitter = new events_1.EventEmitter();
+        this.emitter = new EventEmitter();
         this.old_data = {
             scripts: {
                 invites: "",
-                subs: ""
+                subs: "",
             },
             configs: {
                 invites: "",
-                subs: ""
-            }
+                subs: "",
+            },
         };
         this.headers["X-Api-Key"] = api_key;
-        setInterval(() => { this.tick(); }, tick_delay);
+        setInterval(() => {
+            this.tick();
+        }, tick_delay);
     }
     static handle_errors(response) {
         var _a;
         if (response.body.errors == undefined)
             return true;
-        logger_1.default.err(((_a = response.body.errors) === null || _a === void 0 ? void 0 : _a.at(0).message) ||
-            'An unexpected error occured.');
+        logger.err(((_a = response.body.errors) === null || _a === void 0 ? void 0 : _a.at(0).message) || "An unexpected error occured.");
         return false;
     }
     get_key() {
@@ -53,7 +49,7 @@ class onetap {
     }
     get_configs() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield http.get('configs', this.headers);
+            const response = yield http.get("configs", this.headers);
             const body = response.body;
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -64,10 +60,12 @@ class onetap {
     get_config_by_name(name) {
         return __awaiter(this, void 0, void 0, function* () {
             const configs = yield this.get_configs();
-            const best_match = string_similarity_1.default.findBestMatch(name, configs.map(cfg => cfg.name)).bestMatch.target;
-            logger_1.default.assert(best_match == name, `There's no configuration called "${name}", using "${best_match}" instead.`);
+            const best_match = ss.findBestMatch(name, configs.map((cfg) => cfg.name)).bestMatch.target;
+            logger.assert(best_match == name, `There's no configuration called "${name}", using "${best_match}" instead.`);
             return new Promise((resolve) => {
-                resolve(configs === null || configs === void 0 ? void 0 : configs.find(cfg => { return cfg.name == best_match; }));
+                resolve(configs === null || configs === void 0 ? void 0 : configs.find((cfg) => {
+                    return cfg.name == best_match;
+                }));
             });
         });
     }
@@ -92,10 +90,10 @@ class onetap {
     }
     get_scripts() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield http.get('scripts', this.headers);
+            const response = yield http.get("scripts", this.headers);
             const body = response.body;
             onetap.handle_errors(response);
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 resolve(body.scripts || []);
             });
         });
@@ -103,10 +101,12 @@ class onetap {
     get_script_by_name(name) {
         return __awaiter(this, void 0, void 0, function* () {
             const scripts = yield this.get_scripts();
-            const best_match = string_similarity_1.default.findBestMatch(name, scripts.map(script => script.name)).bestMatch.target;
-            logger_1.default.assert(best_match == name, `There's no script called "${name}", using "${best_match}" instead.`);
+            const best_match = ss.findBestMatch(name, scripts.map((script) => script.name)).bestMatch.target;
+            logger.assert(best_match == name, `There's no script called "${name}", using "${best_match}" instead.`);
             return new Promise((resolve) => {
-                resolve(scripts === null || scripts === void 0 ? void 0 : scripts.find(cfg => { return cfg.name == best_match; }));
+                resolve(scripts === null || scripts === void 0 ? void 0 : scripts.find((cfg) => {
+                    return cfg.name == best_match;
+                }));
             });
         });
     }
@@ -131,10 +131,10 @@ class onetap {
     }
     get_config_invites() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield http.get('configs/invites', this.headers);
+            const response = yield http.get("configs/invites", this.headers);
             const body = response.body;
             onetap.handle_errors(response);
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 resolve(body.invites || []);
             });
         });
@@ -144,7 +144,9 @@ class onetap {
             const config = yield this.get_config_by_name(name);
             const invites = yield this.get_config_invites();
             return new Promise((resolve) => {
-                resolve(invites === null || invites === void 0 ? void 0 : invites.filter(inv => { return inv.config_id === config.config_id; }));
+                resolve(invites === null || invites === void 0 ? void 0 : invites.filter((inv) => {
+                    return inv.config_id === config.config_id;
+                }));
             });
         });
     }
@@ -152,8 +154,8 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const config = yield this.get_config_by_name(name);
             const response = yield http.post(`configs/${config.config_id}/invites`, {
-                'max_age': max_age.toString(),
-                'max_uses': max_uses.toString()
+                max_age: max_age.toString(),
+                max_uses: max_uses.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -165,7 +167,7 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const config = yield this.get_config_by_name(name);
             const response = yield http.delete(`configs/${config.config_id}/invites`, {
-                'invite_id': invite_id.toString()
+                invite_id: invite_id.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -175,7 +177,7 @@ class onetap {
     }
     get_script_invites() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield http.get('scripts/invites', this.headers);
+            const response = yield http.get("scripts/invites", this.headers);
             const body = response.body;
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -188,7 +190,9 @@ class onetap {
             const script = yield this.get_script_by_name(name);
             const invites = yield this.get_script_invites();
             return new Promise((resolve) => {
-                resolve(invites === null || invites === void 0 ? void 0 : invites.filter(inv => { return inv.script_id === script.script_id; }));
+                resolve(invites === null || invites === void 0 ? void 0 : invites.filter((inv) => {
+                    return inv.script_id === script.script_id;
+                }));
             });
         });
     }
@@ -196,8 +200,8 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const script = yield this.get_script_by_name(name);
             const response = yield http.post(`scripts/${script.script_id}/invites`, {
-                'max_age': max_age.toString(),
-                'max_uses': max_uses.toString()
+                max_age: max_age.toString(),
+                max_uses: max_uses.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -209,7 +213,7 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const script = yield this.get_script_by_name(name);
             const response = yield http.delete(`scripts/${script.script_id}/invites`, {
-                'invite_id': invite_id.toString()
+                invite_id: invite_id.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -219,7 +223,7 @@ class onetap {
     }
     get_config_subscriptions() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield http.get('configs/subscriptions', this.headers);
+            const response = yield http.get("configs/subscriptions", this.headers);
             const body = response.body;
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -242,7 +246,7 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const config = yield this.get_config_by_name(name);
             const response = yield http.post(`configs/${config.config_id}/subscriptions`, {
-                'user_id': user_id.toString()
+                user_id: user_id.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -254,7 +258,7 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const config = yield this.get_config_by_name(name);
             const response = yield http.delete(`configs/${config.config_id}/subscriptions`, {
-                'user_id': user_id.toString()
+                user_id: user_id.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -264,7 +268,7 @@ class onetap {
     }
     get_script_subscriptions() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield http.get('scripts/subscriptions', this.headers);
+            const response = yield http.get("scripts/subscriptions", this.headers);
             const body = response.body;
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -286,7 +290,7 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const script = yield this.get_script_by_name(name);
             const response = yield http.post(`scripts/${script.script_id}/subscriptions`, {
-                'user_id': user_id.toString()
+                user_id: user_id.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -298,7 +302,7 @@ class onetap {
         return __awaiter(this, void 0, void 0, function* () {
             const script = yield this.get_script_by_name(name);
             const response = yield http.delete(`scripts/${script.script_id}/subscriptions`, {
-                'user_id': user_id.toString()
+                user_id: user_id.toString(),
             }, this.headers);
             onetap.handle_errors(response);
             return new Promise((resolve) => {
@@ -311,16 +315,16 @@ class onetap {
     }
     tick() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.emitter.emit('tick');
-            if (this.emitter.listenerCount('config-subscription')) {
+            this.emitter.emit("tick");
+            if (this.emitter.listenerCount("config-subscription")) {
                 const subs = yield this.get_config_subscriptions();
                 const data = JSON.stringify(subs);
                 if (this.old_data.configs.subs && this.old_data.configs.subs !== data) {
-                    this.emitter.emit('config-subscription');
+                    this.emitter.emit("config-subscription");
                 }
                 this.old_data.configs.subs = data;
             }
         });
     }
 }
-exports.default = onetap;
+export default onetap;
